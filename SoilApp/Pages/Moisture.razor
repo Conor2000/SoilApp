@@ -1,0 +1,40 @@
+﻿@page "/moisture"
+@using ApexCharts
+@using SoilApp.Data 
+@inject FirebaseDataService FirebaseDataService
+
+<h3>Moisture</h3>
+
+<ApexChart TItem="SoilTestDataPoint"
+           Title="Soil Moisture Levels">
+
+    <ApexPointSeries TItem="SoilTestDataPoint"
+                     Items="Data"
+                     Name="Moisture Level"
+                     SeriesType="SeriesType.Line"
+                     XValue="e => e.Date"
+                     YValue="e=> e.MoistureLevel" />
+</ApexChart>
+
+@code {
+    private List<SoilTestDataPoint> Data { get; set; } = new List<SoilTestDataPoint>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var soilTestDataList = await FirebaseDataService.GetSoilTestDataAsync();
+        Data = soilTestDataList.Select(test => new SoilTestDataPoint
+            {
+                // Adjust the ToString format to include time (e.g., "MM/dd/yyyy HH:mm")
+                Date = DateTimeOffset.FromUnixTimeSeconds(test.timestamp).DateTime.ToLocalTime().ToString("MM/dd/yyyy HH:mm"),
+                MoistureLevel = test.moistureLevel
+            }).ToList();
+    }
+
+
+    public class SoilTestDataPoint
+    {
+        public string Date { get; set; } // Human-readable date
+        public int MoistureLevel { get; set; }
+    }
+
+}

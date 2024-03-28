@@ -1,0 +1,37 @@
+﻿@page "/"
+@using SoilApp.Data;
+@inject FirebaseDataService FirebaseDataService
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+
+@if (soilTestDataList == null)
+{
+    <p><em>Loading soil test data...</em></p>
+}
+else
+{
+    foreach (var soilTest in soilTestDataList)
+    {
+        <div>
+            <p><strong>Moisture Level:</strong> @soilTest.moistureLevel</p>
+            <p><strong>pH Value:</strong> @soilTest.pHValue</p>
+            <p><strong>Nitrogen Value:</strong> @soilTest.nitrogenValue</p>
+            <p><strong>Phosphorus Value:</strong> @soilTest.phosphorusValue</p>
+            <p><strong>Potassium Value:</strong> @soilTest.potassiumValue</p>
+            <p><strong>Timestamp:</strong> @DateTimeOffset.FromUnixTimeSeconds(soilTest.timestamp).LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss")</p>
+            <hr />
+        </div>
+    }
+}
+
+@code {
+    private List<SoilTest> soilTestDataList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        soilTestDataList = await FirebaseDataService.GetSoilTestDataAsync();
+    }
+}
