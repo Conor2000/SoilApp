@@ -1,40 +1,43 @@
 ﻿@page "/moisture"
 @using ApexCharts
-@using SoilApp.Data 
+@using SoilApp.Data
 @inject FirebaseDataService FirebaseDataService
 
 <h3>Moisture</h3>
 
-<ApexChart TItem="SoilTestDataPoint"
-           Title="Soil Moisture Levels">
-
-    <ApexPointSeries TItem="SoilTestDataPoint"
-                     Items="Data"
-                     Name="Moisture Level"
-                     SeriesType="SeriesType.Line"
-                     XValue="e => e.Date"
-                     YValue="e=> e.MoistureLevel" />
-</ApexChart>
+@if (Data != null && Data.Any())
+{
+    <ApexChart TItem="SoilTestDataPoint"
+               Title="Soil Moisture Levels">
+        <ApexPointSeries TItem="SoilTestDataPoint"
+                         Items="Data"
+                         Name="Moisture Level"
+                         SeriesType="SeriesType.Line"
+                         XValue="e => e.Date"
+                         YValue="e => e.MoistureLevel" />
+    </ApexChart>
+}
+else
+{
+    <p>Loading data...</p>
+}
 
 @code {
-    private List<SoilTestDataPoint> Data { get; set; } = new List<SoilTestDataPoint>();
+    private List<SoilTestDataPoint> Data { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         var soilTestDataList = await FirebaseDataService.GetSoilTestDataAsync();
         Data = soilTestDataList.Select(test => new SoilTestDataPoint
-            {
-                // Adjust the ToString format to include time (e.g., "MM/dd/yyyy HH:mm")
-                Date = DateTimeOffset.FromUnixTimeSeconds(test.timestamp).DateTime.ToLocalTime().ToString("MM/dd/yyyy HH:mm"),
-                MoistureLevel = test.moistureLevel
-            }).ToList();
+        {
+            Date = DateTimeOffset.FromUnixTimeSeconds(test.timestamp).DateTime.ToLocalTime().ToString("dd/MM/yyyy HH:mm"),
+            MoistureLevel = test.moistureLevel
+        }).ToList();
     }
-
 
     public class SoilTestDataPoint
     {
-        public string Date { get; set; } // Human-readable date
+        public string Date { get; set; }
         public int MoistureLevel { get; set; }
     }
-
 }
