@@ -1,0 +1,48 @@
+﻿@page "/potassium"
+@using ApexCharts
+@using SoilApp.Data
+@inject FirebaseDataService FirebaseDataService
+
+<h3>Potassium Information</h3>
+
+@if (NutrientData != null && NutrientData.Any())
+{
+    <ApexChart TItem="SoilTestDataPoint"
+               Title="Soil Potassium Levels">
+        <ApexPointSeries TItem="SoilTestDataPoint"
+                         Items="NutrientData"
+                         Name="Potassium Level"
+                         SeriesType="SeriesType.Line"
+                         XValue="item => item.Date"
+                         YValue="item => (decimal)item.NutrientValue" />
+    </ApexChart>
+}
+else
+{
+    <p>Loading data...</p>
+}
+
+@code {
+    private List<SoilTestDataPoint> NutrientData { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPotassiumData();
+    }
+
+    private async Task LoadPotassiumData()
+    {
+        var soilTestDataList = await FirebaseDataService.GetSoilTestDataAsync();
+        NutrientData = soilTestDataList.Select(test => new SoilTestDataPoint
+            {
+                Date = DateTimeOffset.FromUnixTimeSeconds(test.timestamp).DateTime.ToLocalTime().ToString("dd/MM/yyyy HH:mm"),
+                NutrientValue = test.potassiumValue
+            }).ToList();
+    }
+
+    public class SoilTestDataPoint
+    {
+        public string Date { get; set; }
+        public double NutrientValue { get; set; }
+    }
+}
