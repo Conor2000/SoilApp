@@ -1,17 +1,17 @@
-﻿@page "/nitrogen"
+﻿@page "/phosphorus"
 @using ApexCharts
 @using SoilApp.Data
 @inject FirebaseDataService FirebaseDataService
 
-<h3>Nitrogen Information</h3>
+<h3>Phosphorus Information</h3>
 
 @if (NutrientData != null && NutrientData.Any())
 {
     <ApexChart TItem="SoilTestDataPoint"
-               Title="Soil Nitrogen Levels">
+               Title="Soil Phosphorus Levels">
         <ApexPointSeries TItem="SoilTestDataPoint"
                          Items="NutrientData"
-                         Name="Nitrogen Level"
+                         Name="Phosphorus Level"
                          SeriesType="SeriesType.Line"
                          XValue="item => item.Date"
                          YValue="item => (decimal)item.NutrientValue" />
@@ -27,16 +27,16 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadNitrogenData();
+        await LoadPhosphorusData();
     }
 
-    private async Task LoadNitrogenData()
+    private async Task LoadPhosphorusData()
     {
         var soilTestDataList = await FirebaseDataService.GetSoilTestDataAsync();
         NutrientData = soilTestDataList.Select(test => new SoilTestDataPoint
             {
                 Date = DateTimeOffset.FromUnixTimeSeconds(test.timestamp).DateTime.ToLocalTime().ToString("dd/MM/yyyy HH:mm"),
-                NutrientValue = test.nitrogenValue
+                NutrientValue = test.phosphorusValue
             }).ToList();
     }
 
