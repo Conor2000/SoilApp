@@ -1,0 +1,48 @@
+﻿@page "/nitrogen"
+@using ApexCharts
+@using SoilApp.Data
+@inject FirebaseDataService FirebaseDataService
+
+<h3>Nitrogen Levels</h3>
+
+@if (NutrientData != null && NutrientData.Any())
+{
+    <ApexChart TItem="SoilTestDataPoint"
+               Title="Soil Nitrogen Levels">
+        <ApexPointSeries TItem="SoilTestDataPoint"
+                         Items="NutrientData"
+                         Name="Nitrogen Level"
+                         SeriesType="SeriesType.Line"
+                         XValue="item => item.Date"
+                         YValue="item => (decimal)item.NutrientValue" />
+    </ApexChart>
+}
+else
+{
+    <p>Loading data...</p>
+}
+
+@code {
+    private List<SoilTestDataPoint> NutrientData { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadNitrogenData();
+    }
+
+    private async Task LoadNitrogenData()
+    {
+        var soilTestDataList = await FirebaseDataService.GetSoilTestDataAsync();
+        NutrientData = soilTestDataList.Select(test => new SoilTestDataPoint
+            {
+                Date = DateTimeOffset.FromUnixTimeSeconds(test.timestamp).DateTime.ToLocalTime().ToString("dd/MM/yyyy HH:mm"),
+                NutrientValue = test.nitrogenValue
+            }).ToList();
+    }
+
+    public class SoilTestDataPoint
+    {
+        public string Date { get; set; }
+        public double NutrientValue { get; set; }
+    }
+}
