@@ -1,0 +1,43 @@
+﻿@page "/phpage"
+@using ApexCharts
+@using SoilApp.Data
+@inject FirebaseDataService FirebaseDataService
+
+<h3>Soil pH Page</h3>
+
+@if (PhData != null && PhData.Any())
+{
+    <ApexChart TItem="SoilTestDataPoint"
+               Title="Soil pH Levels">
+        <ApexPointSeries TItem="SoilTestDataPoint"
+                         Items="PhData"
+                         Name="pH Level"
+                         SeriesType="SeriesType.Line"
+                         XValue="e => e.Date"
+                         YValue="e => e.PHValue" />
+    </ApexChart>
+}
+else
+{
+    <p>Loading data...</p>
+}
+
+@code {
+    private List<SoilTestDataPoint> PhData { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var soilTestDataList = await FirebaseDataService.GetSoilTestDataAsync();
+        PhData = soilTestDataList.Select(test => new SoilTestDataPoint
+            {
+                Date = DateTimeOffset.FromUnixTimeSeconds(test.timestamp).DateTime.ToLocalTime().ToString("dd/MM/yyyy HH:mm"),
+                PHValue = (decimal)test.pHValue
+            }).ToList();
+    }
+
+    public class SoilTestDataPoint
+    {
+        public string Date { get; set; }
+        public decimal PHValue { get; set; }
+    }
+}
