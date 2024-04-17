@@ -1,20 +1,20 @@
-﻿@page "/phpage"
+﻿@page "/phosphorus"
 @using ApexCharts
 @using SoilApp.Data
 @inject FirebaseDataService FirebaseDataService
 
-<h3>Soil pH</h3>
+<h3>Soil Phosphorus</h3>
 
-@if (PhData != null && PhData.Any())
+@if (NutrientData != null && NutrientData.Any())
 {
     <ApexChart TItem="SoilTestDataPoint"
-               Title="Soil pH Levels">
+               Title="Soil Phosphorus Levels">
         <ApexPointSeries TItem="SoilTestDataPoint"
-                         Items="PhData"
-                         Name="pH Level"
+                         Items="NutrientData"
+                         Name="Phosphorus Level"
                          SeriesType="SeriesType.Line"
-                         XValue="e => e.Date"
-                         YValue="e => e.PHValue" />
+                         XValue="item => item.Date"
+                         YValue="item => (decimal)item.NutrientValue" />
     </ApexChart>
 }
 else
@@ -23,21 +23,26 @@ else
 }
 
 @code {
-    private List<SoilTestDataPoint> PhData { get; set; }
+    private List<SoilTestDataPoint> NutrientData { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadPhosphorusData();
+    }
+
+    private async Task LoadPhosphorusData()
+    {
         var soilTestDataList = await FirebaseDataService.GetSoilTestDataAsync();
-        PhData = soilTestDataList.Select(test => new SoilTestDataPoint
+        NutrientData = soilTestDataList.Select(test => new SoilTestDataPoint
             {
                 Date = DateTimeOffset.FromUnixTimeSeconds(test.timestamp).DateTime.ToLocalTime().ToString("dd/MM/yyyy HH:mm"),
-                PHValue = (decimal)test.pHValue
+                NutrientValue = test.phosphorusValue
             }).ToList();
     }
 
     public class SoilTestDataPoint
     {
         public string Date { get; set; }
-        public decimal PHValue { get; set; }
+        public double NutrientValue { get; set; }
     }
 }
