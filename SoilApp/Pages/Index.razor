@@ -2,36 +2,20 @@
 @using SoilApp.Data;
 @inject FirebaseDataService FirebaseDataService
 
-<h1>Hello, world!</h1>
+<h1>Welcome to SoilSight</h1>
 
-Welcome to your new app.
+<div>
+    <img src="/images/cow.png" alt="Cow Eating Grass" class="img-fluid">
+    <p>
+        Welcome to SoilSight, your go-to solution for real-time soil data analysis. Track and analyze soil moisture,
+        pH, and nutrient levels efficiently to ensure optimal agricultural productivity.
+    </p>
+</div>
 
-
-@if (soilTestDataList == null)
-{
-    <p><em>Loading soil test data...</em></p>
-}
-else
-{
-    foreach (var soilTest in soilTestDataList)
-    {
-        <div>
-            <p><strong>Moisture Level:</strong> @soilTest.moistureLevel</p>
-            <p><strong>pH Value:</strong> @soilTest.pHValue</p>
-            <p><strong>Nitrogen Value:</strong> @soilTest.nitrogenValue</p>
-            <p><strong>Phosphorus Value:</strong> @soilTest.phosphorusValue</p>
-            <p><strong>Potassium Value:</strong> @soilTest.potassiumValue</p>
-            <p><strong>Timestamp:</strong> @DateTimeOffset.FromUnixTimeSeconds(soilTest.timestamp).LocalDateTime.ToString("yyyy-MM-dd HH:mm:ss")</p>
-            <hr />
-        </div>
-    }
-}
-
+<div>
+    <h2>Explore Soil Data Trends</h2>
+    <p class="mt-2">Explore the latest trends in soil health and nutrients from our comprehensive data analysis.</p>
+</div>
 @code {
-    private List<SoilTest> soilTestDataList;
-
-    protected override async Task OnInitializedAsync()
-    {
-        soilTestDataList = await FirebaseDataService.GetSoilTestDataAsync();
-    }
+    
 }
