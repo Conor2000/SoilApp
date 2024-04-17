@@ -1,0 +1,51 @@
+﻿@page "/historicaldata"
+@using SoilApp.Data
+@inject FirebaseDataService FirebaseDataService
+
+<h3>Historical Soil Data</h3>
+
+@if (soilTestDataList == null)
+{
+    <p><em>Loading soil test data...</em></p>
+}
+else if (soilTestDataList.Count == 0)
+{
+    <p><em>No data available.</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date & Time</th>
+                <th>Moisture Level</th>
+                <th>pH Level</th>
+                <th>Nitrogen Level</th>
+                <th>Phosphorus Level</th>
+                <th>Potassium Level</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var soilTest in soilTestDataList)
+            {
+                <tr>
+                    <td>@DateTimeOffset.FromUnixTimeSeconds(soilTest.timestamp).LocalDateTime.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@soilTest.moistureLevel</td>
+                    <td>@soilTest.pHValue</td>
+                    <td>@soilTest.nitrogenValue</td>
+                    <td>@soilTest.phosphorusValue</td>
+                    <td>@soilTest.potassiumValue</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<SoilTest> soilTestDataList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        soilTestDataList = await FirebaseDataService.GetSoilTestDataAsync();
+    }
+}
