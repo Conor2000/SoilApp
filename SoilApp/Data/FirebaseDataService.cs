@@ -11,7 +11,6 @@ namespace SoilApp.Data
     {
         private readonly HttpClient _httpClient;
         private const string FirebaseUrl = "https://soil-data-6f4b6-default-rtdb.firebaseio.com/sensor_readings.json";
-        // https://soil-data-6f4b6-default-rtdb.firebaseio.com/sensor_readings
 
         public FirebaseDataService()
         {
