@@ -22,7 +22,6 @@ namespace SoilApp
 		builder.Logging.AddDebug();
 #endif
 
-            builder.Services.AddSingleton<WeatherForecastService>();
             builder.Services.AddSingleton<FirebaseDataService>();
 
             return builder.Build();
